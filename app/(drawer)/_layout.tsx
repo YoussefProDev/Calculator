@@ -30,10 +30,10 @@ const DrawerLayout = () => (
       }}
     />
     <Drawer.Screen
-      name="(cambio-valuta)"
+      name="(cambio-valuta)/index"
       options={{
-        headerTitle: 'Home',
-        drawerLabel: 'Home',
+        headerTitle: 'Cambio Valuta',
+        drawerLabel: 'Cambio Valuta',
         drawerIcon: ({ size, color }) => <Ionicons name="home-outline" size={size} color={color} />,
       }}
     />

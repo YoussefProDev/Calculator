@@ -2,11 +2,14 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-
+    "target": "es6",
     "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types","./node_modules/rn-currency-picker/src/types"],
     "paths": {
-      "~/*": ["*"]
+      // "~/*": ["*"],
+      "@/*": ["*"],
+      "@/components/*": ["components/*"],
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "rn-currency-picker-env.d.ts"]
 }
