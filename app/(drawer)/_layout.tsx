@@ -34,7 +34,9 @@ const DrawerLayout = () => (
       options={{
         headerTitle: 'Cambio Valuta',
         drawerLabel: 'Cambio Valuta',
-        drawerIcon: ({ size, color }) => <Ionicons name="home-outline" size={size} color={color} />,
+        drawerIcon: ({ size, color }) => (
+          <MaterialIcons name="currency-exchange" size={size} color={color} />
+        ),
       }}
     />
   </Drawer>

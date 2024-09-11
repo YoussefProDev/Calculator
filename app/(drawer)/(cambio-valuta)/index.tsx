@@ -1,19 +1,21 @@
+import { CurrencyPickerComponent } from '@youssefprodev/rn-currency-picker';
 import React from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { CurrencyPicker } from 'rn-currency-picker';
 
+import { Switch } from '@/components/ui/switch';
 import { Colors } from '@/constants/Colors';
 import { defaultStyles } from '@/constants/Styles';
 import { Currency } from '@/constants/types';
-
 const Index = () => {
   const [currencyRate, setCurrencyRate] = React.useState<Record<string, number>>({});
   const [lastUpdate, setLastUpdate] = React.useState<string>(
     new Date().toISOString().split('T')[0]
   );
+  const [darkMode, setDarkMode] = React.useState<boolean>(false);
   const [valueFrom, setValueFrom] = React.useState<string>();
   const [valueTo, setValueTo] = React.useState<string>();
+  const [canCalc, setCanCalc] = React.useState<boolean>(false);
   const [currencyFrom, setCurrencyFrom] = React.useState<Currency>({
     symbol: '€',
     name: 'Euro',
@@ -36,20 +38,23 @@ const Index = () => {
     flag_emoji: '🇺🇸',
   });
 
-  const getCurrencyRate = async () => {
+  const getCurrencyRate = async (selectedCurrency: Currency) => {
     try {
-      const url = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${currencyFrom.code.toLowerCase()}.json`;
+      setCanCalc(false);
+      const url = `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${selectedCurrency.code.toLowerCase()}.json`;
       const response = await fetch(url);
       const data = await response.json();
 
       const { date, ...currency } = data;
       setLastUpdate(date);
 
-      setCurrencyRate(currency[currencyFrom.code.toLowerCase()]);
+      setCurrencyRate(currency[selectedCurrency.code.toLowerCase()]);
 
-      return data;
+      return currency;
     } catch (error) {
       console.error(error);
+    } finally {
+      setCanCalc(true);
     }
   };
 
@@ -57,7 +62,7 @@ const Index = () => {
     // console.log('currencyFrom: ', currencyFrom);
     // console.log('currencyTo: ', currencyTo);
 
-    getCurrencyRate();
+    getCurrencyRate(currencyFrom);
   }, []);
 
   const calc = (type: 'from' | 'to', value = 1) => {
@@ -65,19 +70,14 @@ const Index = () => {
       const rate = currencyRate[currencyTo.code.toLowerCase()];
 
       const rateXamount: number = value * rate;
-
-      setValueTo(rateXamount.toFixed(2) === '0' ? '' : rateXamount.toFixed(2));
-
-      // console.log('currencyRate: ', rate);
-
-      // return rateXamount;
+      setValueTo(rateXamount.toFixed(2) === '0.00' ? '' : rateXamount.toFixed(2));
     } else {
       const rate = currencyRate[currencyTo.code.toLowerCase()];
 
       const rateXamount: number = value / rate;
 
       // rateXamount.toPrecision(4);
-      setValueFrom(rateXamount.toFixed(2) === '0' ? '' : rateXamount.toFixed(2));
+      setValueFrom(rateXamount.toFixed(2) === '0.00' ? '' : rateXamount.toFixed(2));
     }
   };
   return (
@@ -88,17 +88,18 @@ const Index = () => {
       <Text style={defaultStyles.header}>Currency Exchange</Text>
 
       <View style={styles.inputContainer}>
-        <CurrencyPicker
+        <CurrencyPickerComponent
           enable
           onSelectCurrency={(data: Currency) => {
             setCurrencyFrom(data);
-            getCurrencyRate();
+
+            getCurrencyRate(data);
             setValueFrom('');
             setValueTo('');
             // console.log('DATA', data);
             // console.log('DATA', currencyFrom.name);
           }}
-          darkMode={false}
+          darkMode={darkMode}
           title="Currency"
           searchPlaceholder="Search"
           showCloseButton
@@ -110,13 +111,16 @@ const Index = () => {
           showCurrencyName={false}
           showCurrencyCode
           containerStyle={{
-            container: {
-              backgroundColor: Colors.light.lightGray,
-              padding: 20,
-              borderRadius: 16,
-              fontSize: 20,
-              marginRight: 10,
-            },
+            container: [
+              {
+                backgroundColor: Colors.light.lightGray,
+                padding: 20,
+                borderRadius: 16,
+                fontSize: 20,
+                marginRight: 10,
+              },
+              canCalc ? styles.enabled : styles.disabled,
+            ],
             flagWidth: 25,
             currencyCodeStyle: {},
             currencyNameStyle: {},
@@ -145,7 +149,7 @@ const Index = () => {
 
             calc('from', +Text);
           }}
-          style={[styles.input, { flex: 1 }]}
+          style={[styles.input, { flex: 1 }, canCalc ? styles.enabled : styles.disabled]}
           placeholder="From Value"
           placeholderTextColor={Colors.light.gray}
           keyboardType="numeric"
@@ -153,17 +157,19 @@ const Index = () => {
         />
       </View>
       <View style={styles.inputContainer}>
-        <CurrencyPicker
+        <CurrencyPickerComponent
           enable
           onSelectCurrency={(data: Currency) => {
             setCurrencyTo(data);
-            setValueFrom('1');
-            calc('from');
-            // setValueTo('');
+
+            setValueFrom('');
+            setValueTo('');
+            // calc('from');
+
             // console.log('DATA', data);
             // console.log('DATA', currencyTo.name);
           }}
-          darkMode={false}
+          darkMode={darkMode}
           title="Currency"
           searchPlaceholder="Search"
           showCloseButton
@@ -175,13 +181,16 @@ const Index = () => {
           showCurrencyName={false}
           showCurrencyCode
           containerStyle={{
-            container: {
-              backgroundColor: Colors.light.lightGray,
-              padding: 20,
-              borderRadius: 16,
-              fontSize: 20,
-              marginRight: 10,
-            },
+            container: [
+              {
+                backgroundColor: Colors.light.lightGray,
+                padding: 20,
+                borderRadius: 16,
+                fontSize: 20,
+                marginRight: 10,
+              },
+              canCalc ? styles.enabled : styles.disabled,
+            ],
             flagWidth: 25,
             currencyCodeStyle: {},
             currencyNameStyle: {},
@@ -209,13 +218,24 @@ const Index = () => {
             setValueTo(Text);
             calc('to', +Text);
           }}
-          style={[styles.input, { flex: 1 }]}
+          style={[styles.input, { flex: 1 }, canCalc ? styles.enabled : styles.disabled]}
           placeholder="To Value"
           placeholderTextColor={Colors.light.gray}
           keyboardType="numeric"
           value={valueTo}
         />
       </View>
+
+      <Switch
+        onToggle={() => setDarkMode(!darkMode)}
+        size="lg"
+        isDisabled={false}
+        trackColor={{ false: Colors.light.gray, true: Colors.light.primary }}
+        thumbColor={Colors.light.lightGray}
+        ios_backgroundColor={Colors.light.lightGray}
+        value={darkMode}
+      />
+
       <Text
         style={{
           fontSize: 18,
@@ -242,10 +262,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   enabled: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.lightGray,
   },
   disabled: {
-    backgroundColor: Colors.light.primaryMuted,
+    backgroundColor: Colors.light.lightGray,
+    opacity: 0.5,
   },
 });
 

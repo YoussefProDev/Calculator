@@ -4,12 +4,15 @@
     "strict": true,
     "target": "es6",
     "baseUrl": ".",
-    "typeRoots": ["./node_modules/@types","./node_modules/rn-currency-picker/src/types"],
+    "typeRoots": ["./node_modules/@types", "./node_modules/rn-currency-picker/src/types"],
     "paths": {
       // "~/*": ["*"],
+      "@youssefprodev/rn-currency-picker": [
+        "node_modules/@youssefprodev/rn-currency-picker/lib/typescript/module/src/index.d.ts"
+      ],
       "@/*": ["*"],
-      "@/components/*": ["components/*"],
+      "@/components/*": ["components/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "rn-currency-picker-env.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
