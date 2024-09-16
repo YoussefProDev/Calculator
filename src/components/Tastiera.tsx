@@ -10,7 +10,7 @@ interface TastieraProps{
 }
 
 //non renderizzo la tastiera piu' volte
-const Tastiera = ({ onClick }: TastieraProps) => {
+const Tastiera = React.memo(({ onClick }: TastieraProps) => {
   return (
     <View style={styles.keyboardContainer}>
       {
@@ -20,6 +20,6 @@ const Tastiera = ({ onClick }: TastieraProps) => {
       }
     </View>
   );
-};
+});
 
 export default Tastiera;
