@@ -1,11 +1,18 @@
-import { View,SafeAreaView, TextInput} from 'react-native'
+import { View,SafeAreaView, TextInput, TouchableOpacity} from 'react-native'
 import React, { useState, useEffect} from 'react'
 import {NULLA } from '~/src/data/@types'
 import Tastiera from '~/src/components/Tastiera'
 import { formatNumber, cleanNumber, CompattaNumero} from '~/src/functions/utils'
 import { styles } from '~/src/stili/stileCalcolatrice'
+import { Ionicons } from '@expo/vector-icons'
+
+//navigazione e aprire il drawer
 
 export default function Calculator() {
+
+  //navigazione
+
+
   const [blocco, setBlocco]=useState<boolean>(false);
   const [begin, setBegin]=useState<boolean>(true);
   //input text

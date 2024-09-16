@@ -4,7 +4,7 @@ import { Bottone } from '../data/@types';
 import { styles } from '../stili/stileBottone';
 
 export default function BottoneApple(props: Bottone) {
-
+  console.log(props.BackgroundColor);
   const Premuto=()=>{
     if(props.alPremere)
       props.alPremere(props.text);
@@ -14,13 +14,7 @@ export default function BottoneApple(props: Bottone) {
 
   return (
     <View style={[{width: props.larghezza, height: props.altezza}, styles.container]}>
-      <Pressable style={({pressed}) => [
-          {
-            backgroundColor: pressed ? 'white' : props.BackgroundColor,
-          },
-          styles.pressable,
-        ]}
-
+      <Pressable style={[{backgroundColor:props.BackgroundColor}, styles.pressable]}
       onPress={Premuto}>
         {props?.icon?
         //usa require solo per una risorsa indispensabile e sempre presente

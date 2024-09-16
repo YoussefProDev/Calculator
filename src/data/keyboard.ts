@@ -1,8 +1,9 @@
 //NUMERIC KEYBOARD
 
+import { Colors } from "~/appearence/Colors";
 import { Bottone } from "./@types";
 
-const bgLightGray:string="#a6a6a6";
+const bgLightGray:string= Colors.dark.gray;
 const bgDarkGray:string="#303030";
 const bgOrange:string="orange";
 
@@ -14,7 +15,7 @@ export const ButtonSize={
 export const Keyboard: Bottone[]=[
     {
         text:"AC",
-        BackgroundColor: bgLightGray,
+        BackgroundColor: Colors.dark.gray,
         fontColor: "black",
         altezza: ButtonSize.height,
         larghezza: ButtonSize.width,
