@@ -1,13 +1,12 @@
-import '../global.css';
 import React from 'react';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(drawer)',
-};
-
+/**LAYOUT APPARTENENTE A TUTI I FILE DELLA APPLICAZIONE
+ * 
+ * -Ogni screen che incorpora il drawer viene visto come un stack screen
+ * quindi magari si aggiunge un modale in futuro (per comprare Premium)
+ */
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
