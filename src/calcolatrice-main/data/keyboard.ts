@@ -1,6 +1,6 @@
 //NUMERIC KEYBOARD
 
-import { Colors } from "~/appearence/Colors";
+import { Colors } from "~/global/appearence/Colors";
 import { Bottone } from "./@types";
 
 const bgLightGray:string= Colors.dark.gray;

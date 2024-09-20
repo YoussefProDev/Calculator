@@ -33,9 +33,10 @@ const DrawerLayout = () => (
     }}
   />
   <Drawer.Screen
-    name="currency-converter/index"
+    name="pagine/currency"
     options={{
       headerShown: true,
+      title: "Currency Converter",
       drawerLabel: 'Currency',
       drawerIcon: ({ size, color }) => (
         <Ionicons name="cash-outline" size={size} color={color} />
@@ -43,9 +44,10 @@ const DrawerLayout = () => (
     }}
   />
   <Drawer.Screen
-    name="percentage/index"
+    name="pagine/percentage"
     options={{
-      headerShown: true,
+      headerShown: false,
+      title: "Percentage Calculator",
       drawerLabel: 'Percentage',
       drawerIcon: ({ size, color }) => (
         <Ionicons name="stats-chart-outline" size={size} color={color} />
