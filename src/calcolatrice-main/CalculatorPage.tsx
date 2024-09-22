@@ -1,19 +1,22 @@
 import { View,SafeAreaView, TextInput} from 'react-native'
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect, useRef} from 'react'
 import {NULLA } from './data/@types'
 import Tastiera from './components/Tastiera'
 import { formatNumber, cleanNumber, CompattaNumero} from './functions/utils'
 import { styles } from './stili/stileCalcolatrice'
+import { ScrollView } from 'react-native-gesture-handler'
 
 export default function CalculatorPage() {
+
+  const scrollViewRef = useRef<ScrollView>(null); // Referenza per ScrollView
 
   const [blocco, setBlocco]=useState<boolean>(false);
   const [begin, setBegin]=useState<boolean>(true);
   //input text
   const [inputText, setInputText]= useState<string>("0");
   const [historyText, setHistoryText]= useState<string>("");
-  const [historyFontSize, setHistoryFontSize]=useState<number>(100);
-  const [sizeOutput, setSizeOutput] = useState<number>(80);
+  const [historyFontSize, setHistoryFontSize]=useState<number>(35);
+  const [sizeOutput, setSizeOutput] = useState<number>(100);
 
   const [operando1, setOperando1]=useState<string>(NULLA);
   const [operando2, setOperando2]=useState<string>(NULLA);
@@ -22,28 +25,12 @@ export default function CalculatorPage() {
   const [simbolo, setSimbolo]=useState<string>(NULLA);
   const [risultato, setRisultato]=useState<string>(NULLA);
 
-  useEffect(() => {
-    // Adjust font size based on text length
-    const maxFontSize = 100;  // Set maximum font size
-    const minFontSize = 20;  // Set minimum font size
-
-    const textLength = historyText.length;
-
-    // Adjust font size proportionally based on text length
-    const calculatedFontSize = Math.max(
-      minFontSize,
-      Math.min(maxFontSize, 250 / textLength) // Adjust multiplier for better fit
-    );
-
-    setHistoryFontSize(calculatedFontSize);
-  }, [historyText]); // Recalculate font size when text changes
 
   const onClickHandle=(tasto:string)=>{
      
       switch(tasto){
 
         case (isNumber(tasto)):{
-          if(!blocco){
             setBegin(false);
             if(simbolo==NULLA){
 
@@ -63,12 +50,10 @@ export default function CalculatorPage() {
                 SetInput(inputText +tasto);
               }
             }
-          }
           break;
         }
 
         case(isSimbol(tasto)):{
-            setBlocco(false);
           if(operando1===NULLA && risultato===NULLA){
             setOperando1("0");
           }
@@ -87,7 +72,6 @@ export default function CalculatorPage() {
         case("="):{
 
           let ris:number=0;
-          
           
           if(operando1!==NULLA&&operando2!==NULLA&&simbolo!==NULLA){
             ris=EseguiOperazione(parseFloat(operando1),parseFloat(operando2));
@@ -241,19 +225,22 @@ export default function CalculatorPage() {
 
   const SetResult=(value:string)=>{
 
-    // Converti la stringa in numero float
+    console.log("risultato è: " + value);
+    // Converti la stringa in numro float
     const numericValue = parseFloat(value);
 
     if (!isNaN(numericValue)) {
         // Converti il numero in una stringa con precisione arbitraria, eliminando gli errori float
         let preciseValue:number= parseFloat(numericValue.toPrecision(10));
-        
-        const thresholdUp = 1_000_000_000;
-        const thresholdDown = 0.0000000001;
+        console.log("risultato è: " + Math.abs(preciseValue));
+
+        const thresholdUp:number = 1000000000;
+        const thresholdDown:number= 0.0000000001;
 
         // Se il valore è maggiore o uguale al limite, usa la notazione scientifica
-        if (Math.abs(preciseValue) >= thresholdUp || Math.abs(preciseValue) <= thresholdDown) {
+        if (Math.abs(preciseValue) >= thresholdUp || (Math.abs(preciseValue) <= thresholdDown && Math.abs(preciseValue) > 0)) {
             // Usa toExponential per la notazione scientifica, limitando il numero di decimali a 2
+            alert("sono entrato");
             SetInput(preciseValue.toExponential(2));
         }else
             SetInput(preciseValue.toString());
@@ -278,9 +265,6 @@ export default function CalculatorPage() {
       else 
         finito= parsed===0?"0":formatNumber(value);
 
-      if(finito.length==11)
-        setBlocco(true);
-
       CambiaFontSize(finito.length);
       
       setInputText(finito);
@@ -289,37 +273,65 @@ export default function CalculatorPage() {
 
 const CambiaFontSize=(arg:number)=>{
   if(arg<=7){
-    setSizeOutput(80);
+    setSizeOutput(100);
   }else if(arg==8){
-    setSizeOutput(70);
+    setSizeOutput(90);
   }else if(arg==9){
-    setSizeOutput(60);
+    setSizeOutput(80);
   }else if(arg==10 || arg==11){
-    setSizeOutput(50);
+    setSizeOutput(70);
   }else if(arg>11){
-    setSizeOutput(40);
+    setSizeOutput(60);
   }
 }
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.ContenitoreScreen}>
-        <View style={styles.History}>
-          <TextInput
-              editable={false}
-              value={historyText}
-              style={[styles.HistoryText, {fontSize: historyFontSize}]}
-            />
-        </View>
-        <View style={styles.AreaInterazione}>
+return (
+  <SafeAreaView style={styles.safeArea}>
+    <View style={styles.ContenitoreScreen}>
+
+      {/* Sezione Cronologia */}
+      <View style={styles.HistoryContainer}>
+        <ScrollView
+          horizontal
+          style={styles.scrollContainer}
+          ref={scrollViewRef}
+          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
+        >
           <TextInput
             editable={false}
-            value={inputText}
-            style={[styles.textInput, {fontSize: sizeOutput}]}
+            value={historyText}
+            style={[styles.HistoryText, { fontSize: historyFontSize }]}
           />
-          <Tastiera onClick={onClickHandle} />
-        </View>
+        </ScrollView>
+        <ScrollView
+          horizontal
+          style={styles.scrollContainer}
+          ref={scrollViewRef}
+          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
+        >
+          <TextInput
+            editable={false}
+            value={historyText}
+            style={[styles.HistoryText, { fontSize: historyFontSize }]}
+          />
+        </ScrollView>
       </View>
-    </SafeAreaView>
-  );
+
+      {/* Sezione Input Numerico */}
+      <View style={styles.InputContainer}>
+        <TextInput
+          editable={false}
+          value={inputText}
+          style={[styles.textInput, { fontSize: sizeOutput }]}
+        />
+      </View>
+
+      {/* Sezione Tastiera */}
+      <View style={styles.KeyboardContainer}>
+        <Tastiera onClick={onClickHandle} />
+      </View>
+
+    </View>
+  </SafeAreaView>
+);
 }

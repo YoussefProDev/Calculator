@@ -1,42 +1,61 @@
-import {StyleSheet, Platform} from 'react-native';
-import { RFValue, RFPercentage } from "react-native-responsive-fontsize";
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: 'black',
-      },
-      ContenitoreScreen: {
-        flex: 1,
-        alignItems: 'center',
-      },
-      AreaInterazione: {
-        position: 'absolute',
-        bottom: 0,
-        width:"100%",
-        alignItems: 'center',
-      },
-      History:{
-        position: 'absolute',
-        top:  Platform.OS==="android"?90:150,
-        width: "100%",
-        height:50,
-      },
-      HistoryText:{
-        textAlign: "right",
-        color:"gray",
-        height:50,
-        paddingHorizontal: 32, // px-8 in Tailwind
-        marginBottom:5,
-      },
-      textInput: {
-        height: 110, // h-20 in Tailwind
-        width: '100%', // w-screen in Tailwind
-        color: 'white',
-        fontFamily: 'serif',
-        fontWeight: '100', // font-extralight in Tailwind
-        textAlign: 'right',
-        paddingHorizontal: 32, // px-8 in Tailwind
-        marginBottom:5,
-      },
-    });
+
+  safeArea: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  ContenitoreScreen: {
+    flex: 1,
+    width: '100%',
+  },
+  scrollContainer:{
+    //borderWidth:5,
+    //borderColor:"green",
+    marginTop:40,
+  },
+  // Contenitore per la cronologia
+  HistoryContainer: {
+    flex: 0.8,
+    flexDirection: "column-reverse",
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+   // borderWidth:3,
+   // borderColor:"white",
+  },
+  HistoryText: {
+    textAlign: 'right',
+    color: 'gray',
+    paddingHorizontal: 32,
+   // borderWidth:8,
+   // borderColor:"pink",
+    height:60,
+  },
+
+  // Area input numerico
+  InputContainer: {
+    flex: 0.5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  textInput: {
+    width: '100%',
+    color: 'white',
+    fontFamily: 'serif',
+    fontWeight: '100',
+    textAlign: 'right',
+    paddingHorizontal: 32,
+    marginBottom: 5,
+  },
+
+  // Contenitore della tastiera
+  KeyboardContainer: {
+    flex: 2,
+    width: '100%',
+    alignItems: 'center',
+   // borderWidth:2,
+   // borderColor:"white",
+  },
+});
