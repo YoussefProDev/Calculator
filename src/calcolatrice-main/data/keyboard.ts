@@ -3,9 +3,11 @@
 import { Colors } from "~/global/appearence/Colors";
 import { Bottone } from "./@types";
 
+export const INDIGO:string= "#3F00FF";
+
 const bgLightGray:string= Colors.dark.gray;
 const bgDarkGray:string="#303030";
-const bgOrange:string="orange";
+const bgOrange:string=INDIGO;
 
 export const ButtonSize={
     height:88,
@@ -19,7 +21,7 @@ export const Keyboard: Bottone[]=[
         fontColor: "black",
         altezza: ButtonSize.height,
         larghezza: ButtonSize.width,
-        icon: require("./../img/cBella.png"),
+       // icon: require("./../img/cBella.png"),
     },
     {
         text:"+/-",

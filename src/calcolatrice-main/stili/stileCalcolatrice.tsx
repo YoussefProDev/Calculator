@@ -11,35 +11,49 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   scrollContainer:{
-    //borderWidth:5,
-    //borderColor:"green",
-    marginTop:40,
+   // borderWidth:5,
+  // borderColor:"green",
   },
   // Contenitore per la cronologia
   HistoryContainer: {
     flex: 0.8,
-    flexDirection: "column-reverse",
+    flexDirection: "column",
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+    marginBottom:10,
    // borderWidth:3,
    // borderColor:"white",
   },
   HistoryText: {
     textAlign: 'right',
-    color: 'gray',
     paddingHorizontal: 32,
-   // borderWidth:8,
-   // borderColor:"pink",
     height:60,
   },
 
-  // Area input numerico
-  InputContainer: {
-    flex: 0.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+  HistoryText1:{
+    color: "#a1a9b5",
+    fontSize: 30,
+
   },
+  HistoryText2:{
+    color: "#757b85",
+    fontSize: 25,
+
+  },
+  HistoryText3:{
+    color:"#494c52",
+    fontSize: 20,
+    marginTop:50,
+  },
+  textContainer:{
+    flex:0.5,
+    flexDirection:"column",
+    justifyContent:"flex-end",
+    alignItems:"flex-end",
+    //borderWidth:3,
+    //borderColor:"white",
+  },
+  // Area input numerico
   textInput: {
     width: '100%',
     color: 'white',
@@ -48,6 +62,8 @@ export const styles = StyleSheet.create({
     textAlign: 'right',
     paddingHorizontal: 32,
     marginBottom: 5,
+   // borderWidth:3,
+   // borderColor:"white",
   },
 
   // Contenitore della tastiera

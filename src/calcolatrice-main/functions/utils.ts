@@ -26,11 +26,10 @@ export function formatNumber(numberString:string):string {
         }
         formattedIntegerPart = integerPart[i] + formattedIntegerPart;
     }
-    console.log(formattedIntegerPart);
     if(meno){
         formattedIntegerPart="-"+formattedIntegerPart;
     }
-    console.log(formattedIntegerPart);
+
     // Ricomponiamo la parte intera formattata e la parte decimale (se esiste)
     return decimalPart ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
 }
@@ -49,9 +48,9 @@ export function CompattaNumero(numero:number):string{
         
         const thresholdUp = 1_000_000_000;
         const thresholdDown = 0.0000000001;
-        console.log(preciseValue);
+    
         // Se il valore è maggiore o uguale al limite, usa la notazione scientifica
-        if (Math.abs(preciseValue) >= thresholdUp || Math.abs(preciseValue) <= thresholdDown) {
+        if (Math.abs(preciseValue) >= thresholdUp || (Math.abs(preciseValue) <= thresholdDown && Math.abs(preciseValue) > 0)) {
             // Usa toExponential per la notazione scientifica, limitando il numero di decimali a 2
             return (preciseValue.toExponential(2));
         }else

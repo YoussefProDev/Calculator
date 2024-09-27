@@ -12,4 +12,9 @@ export interface Bottone{
     alPremere?:(arg0:string)=>void,
 }
 
+export interface HistoryLevel{
+    level1: string,
+    level2:string,
+}
+
 export const NULLA:string="NON SETTATO";

@@ -1,6 +1,6 @@
 import { View,SafeAreaView, TextInput} from 'react-native'
 import React, { useState, useEffect, useRef} from 'react'
-import {NULLA } from './data/@types'
+import {NULLA, HistoryLevel} from './data/@types'
 import Tastiera from './components/Tastiera'
 import { formatNumber, cleanNumber, CompattaNumero} from './functions/utils'
 import { styles } from './stili/stileCalcolatrice'
@@ -9,13 +9,19 @@ import { ScrollView } from 'react-native-gesture-handler'
 export default function CalculatorPage() {
 
   const scrollViewRef = useRef<ScrollView>(null); // Referenza per ScrollView
+  const scrollViewRef1 = useRef<ScrollView>(null); // Referenza per ScrollView
+  const scrollViewRef2 = useRef<ScrollView>(null); // Referenza per ScrollView
+
+  //managing History
+  const [historyRecord, setHistoryRecord]= useState<HistoryLevel>({level1:"", level2:""});
+  const [syncHistory, setSyncHistory]= useState<boolean>(false);
+  const [historyText, setHistoryText]= useState<string>("");
 
   const [blocco, setBlocco]=useState<boolean>(false);
   const [begin, setBegin]=useState<boolean>(true);
   //input text
   const [inputText, setInputText]= useState<string>("0");
-  const [historyText, setHistoryText]= useState<string>("");
-  const [historyFontSize, setHistoryFontSize]=useState<number>(35);
+ 
   const [sizeOutput, setSizeOutput] = useState<number>(100);
 
   const [operando1, setOperando1]=useState<string>(NULLA);
@@ -31,39 +37,57 @@ export default function CalculatorPage() {
       switch(tasto){
 
         case (isNumber(tasto)):{
+
+            //capire se quando annullare la cronologia
             setBegin(false);
+
             if(simbolo==NULLA){
+
+              //se é dopo un =
+              if(syncHistory)
+                SyncHistory();
 
               if(operando1===NULLA){
                 setOperando1(tasto);
                 SetInput(tasto);
+                setHistoryText((prev)=>prev+tasto);
               }else{
                 setOperando1((prev)=>prev+tasto);
                 SetInput(inputText + tasto);
+                setHistoryText((prev)=>prev+tasto);
               }
             }else{
               if(operando2===NULLA){
                 setOperando2(tasto);
                 SetInput(tasto);
+                setHistoryText((prev)=>prev+tasto);
               }else{
                 setOperando2((prev)=>prev+tasto);
                 SetInput(inputText +tasto);
+                setHistoryText((prev)=>prev+tasto);
               }
             }
           break;
         }
 
         case(isSimbol(tasto)):{
+          if(syncHistory)
+            SyncHistory();
+
           if(operando1===NULLA && risultato===NULLA){
             setOperando1("0");
+            setHistoryText((prev)=>prev+tasto);
           }
           else if(operando1!==NULLA&&operando2===NULLA){
             setSimbolo(tasto);
+            setHistoryText((prev)=>prev+tasto);
           }
           else if(operando1!==NULLA&&operando2!==NULLA){
             let result=EseguiOperazione(parseFloat(operando1),parseFloat(operando2));
+            setSyncHistory(false);
             setOperando1(result.toString());
             setSimbolo(tasto);
+            setHistoryText(result.toString()+tasto);
           }
           
           break;
@@ -74,17 +98,26 @@ export default function CalculatorPage() {
           let ris:number=0;
           
           if(operando1!==NULLA&&operando2!==NULLA&&simbolo!==NULLA){
+            setHistoryText((prev)=>prev+tasto);
             ris=EseguiOperazione(parseFloat(operando1),parseFloat(operando2));
+           
           }
           else if(risultato!==NULLA && vecchioOperando2 !==NULLA&&  vecchioSimbolo !==NULLA){
+            if(syncHistory)
+                SyncHistory();
+
             setSimbolo(vecchioSimbolo);
+            setHistoryText(operando1+vecchioSimbolo+vecchioOperando2+tasto);
             ris=EseguiOperazione(parseFloat(operando1),parseFloat(vecchioOperando2));
+            
           }
 
           break;
         }
 
         case("+/-"):{
+          if(syncHistory)
+            SyncHistory();
 
           let valore:number=parseFloat(cleanNumber(inputText));
          
@@ -98,6 +131,8 @@ export default function CalculatorPage() {
         }
 
         case("%"):{
+          if(syncHistory)
+            SyncHistory();
 
           let valore:number=parseFloat(cleanNumber(inputText));
           //frontend subito aggiornato
@@ -110,6 +145,8 @@ export default function CalculatorPage() {
         }
 
         case("."):{
+          if(syncHistory)
+            SyncHistory();
           //frontend subito aggiornato
           //se ho giá la virgola non metto la virgola
           if(!inputText.includes(".") && !blocco){
@@ -125,6 +162,7 @@ export default function CalculatorPage() {
           
           if(begin){
               setHistoryText("");
+              setHistoryRecord({level1:"",level2:""});
           }
           Pulizia();
            break;
@@ -149,7 +187,7 @@ export default function CalculatorPage() {
     
     setRisultato(risultato.toString());
     SetResult(risultato.toString());
-    setHistoryText(CompattaNumero(op1)+simbol+CompattaNumero(op2)+"="+CompattaNumero(risultato));
+    setHistoryText((prev)=>prev+CompattaNumero(risultato));
     setvecchioOperando2(op2.toString());
 
     simbolo!==NULLA?setvecchioSimbolo(simbolo):null;
@@ -162,12 +200,16 @@ export default function CalculatorPage() {
     setOperando2(NULLA);
     setSimbolo(NULLA);
     
+    setSyncHistory(true);
   
     return risultato;
   }
 
   /**MAIN POLISH FUNCTION */
   const Pulizia=()=>{
+      if(risultato==NULLA)
+        setHistoryText("");
+
       setOperando2(NULLA);
       setSimbolo(NULLA);
       setOperando1(NULLA);
@@ -179,16 +221,45 @@ export default function CalculatorPage() {
       setBlocco(false);
       setBegin(true);
   }
+
+  /**SHIFT DAL BASSO VERSO L'ALTO DELLA HISTORY DI OPERAZIONI */
+  const SyncHistory = ()=>{
+
+        const newHistory:HistoryLevel={level1:"", level2:""};
+
+        if(historyRecord.level1!==""){
+          newHistory.level2=historyRecord.level1; 
+          newHistory.level1=historyText;
+        }else {
+          newHistory.level1=historyText;
+        }
+
+      setHistoryRecord(newHistory);
+
+
+      if(operando1!=NULLA)
+        setHistoryText(CompattaNumero(parseFloat(operando1)))
+      else
+        setHistoryText("");
+
+      setSyncHistory(false);
+  }
   
 
 //aggiorna valori in caso di "%",".","+-"
   const Aggiornamento=(value: string)=>{
-    if(operando1!==NULLA&&operando2===NULLA)
+    if(operando1!==NULLA&&operando2===NULLA){
       setOperando1(value);
-    else if(operando1!==NULLA&&operando2!==NULLA)
+      setHistoryText(value);
+    }
+    else if(operando1!==NULLA&&operando2!==NULLA){
       setOperando2(value);
-    else if(operando1===NULLA&&operando2===NULLA)
-      setOperando1(value);
+      setHistoryText(operando1+simbolo+value);
+    }
+    else if(operando1===NULLA&&operando2===NULLA){
+        setOperando1(value);
+        setHistoryText(value);
+    }
   }
 
   //**controlla se il tasto premuto é un numero */
@@ -225,14 +296,12 @@ export default function CalculatorPage() {
 
   const SetResult=(value:string)=>{
 
-    console.log("risultato è: " + value);
     // Converti la stringa in numro float
     const numericValue = parseFloat(value);
 
     if (!isNaN(numericValue)) {
         // Converti il numero in una stringa con precisione arbitraria, eliminando gli errori float
         let preciseValue:number= parseFloat(numericValue.toPrecision(10));
-        console.log("risultato è: " + Math.abs(preciseValue));
 
         const thresholdUp:number = 1000000000;
         const thresholdDown:number= 0.0000000001;
@@ -294,13 +363,25 @@ return (
         <ScrollView
           horizontal
           style={styles.scrollContainer}
-          ref={scrollViewRef}
-          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: false })}
+          ref={scrollViewRef2}
+          onContentSizeChange={() => scrollViewRef2.current?.scrollToEnd({ animated: false })}
         >
           <TextInput
             editable={false}
-            value={historyText}
-            style={[styles.HistoryText, { fontSize: historyFontSize }]}
+            value={historyRecord.level2}
+            style={[styles.HistoryText, styles.HistoryText3]}
+          />
+        </ScrollView>
+        <ScrollView
+          horizontal
+          style={styles.scrollContainer}
+          ref={scrollViewRef1}
+          onContentSizeChange={() => scrollViewRef1.current?.scrollToEnd({ animated: false })}
+        >
+          <TextInput
+            editable={false}
+            value={historyRecord.level1}
+            style={[styles.HistoryText, styles.HistoryText2]}
           />
         </ScrollView>
         <ScrollView
@@ -312,18 +393,20 @@ return (
           <TextInput
             editable={false}
             value={historyText}
-            style={[styles.HistoryText, { fontSize: historyFontSize }]}
+            style={[styles.HistoryText, styles.HistoryText1]}
           />
         </ScrollView>
       </View>
 
       {/* Sezione Input Numerico */}
-      <View style={styles.InputContainer}>
-        <TextInput
-          editable={false}
-          value={inputText}
-          style={[styles.textInput, { fontSize: sizeOutput }]}
-        />
+      <View style={styles.textContainer}>
+        <ScrollView  horizontal>
+          <TextInput
+            editable={false}
+            value={inputText}
+            style={[styles.textInput, { fontSize: sizeOutput }]}
+          />
+        </ScrollView>
       </View>
 
       {/* Sezione Tastiera */}
