@@ -19,12 +19,12 @@
     "noInstall": false,
     "overwrite": false,
     "importAlias": true,
-    "packageManager": "pnpm",
+    "packageManager": "npm",
     "eas": false
   },
   "packageManager": {
-    "type": "pnpm",
-    "version": "9.4.0"
+    "type": "npm",
+    "version": "10.8.2"
   },
   "os": {
     "type": "Darwin",
